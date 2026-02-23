@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -47,9 +47,11 @@ function formatTime(ms: number) {
   return `${mm}:${ss}`;
 }
 
-export default function PlayPage({ params }: { params: { quizId: string } }) {
+export default function PlayPage() {
   const router = useRouter();
   const sp = useSearchParams();
+  const routeParams = useParams<{ quizId: string }>();
+  const quizId = String(routeParams?.quizId || "");
   const cohort = sp.get("cohort") || "cohort-1";
   const attemptId = sp.get("attemptId") || "";
 
@@ -72,7 +74,8 @@ export default function PlayPage({ params }: { params: { quizId: string } }) {
 
   useEffect(() => {
     let ok = true;
-    fetch(`/api/quiz/${params.quizId}`)
+    if (!quizId) return;
+    fetch(`/api/quiz/${quizId}`)
       .then((r) => r.json())
       .then((j) => {
         if (!ok) return;
@@ -81,7 +84,7 @@ export default function PlayPage({ params }: { params: { quizId: string } }) {
     return () => {
       ok = false;
     };
-  }, [params.quizId]);
+  }, [quizId]);
 
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 250);
@@ -115,7 +118,7 @@ export default function PlayPage({ params }: { params: { quizId: string } }) {
         method: "POST",
         headers: { "content-type": "application/json" },
         body: JSON.stringify({
-          quizId: params.quizId,
+          quizId,
           attemptId,
           cohort,
           displayName: attempt.displayName || "",
@@ -130,7 +133,7 @@ export default function PlayPage({ params }: { params: { quizId: string } }) {
       if (!res.ok) throw new Error(data?.error || "Submit failed");
 
       lsSet(`bcq.result.${attemptId}`, JSON.stringify(data));
-      router.push(`/q/${params.quizId}/result/${attemptId}?cohort=${encodeURIComponent(cohort)}`);
+      router.push(`/q/${quizId}/result/${attemptId}?cohort=${encodeURIComponent(cohort)}`);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Submit failed";
       alert(msg);
@@ -147,7 +150,7 @@ export default function PlayPage({ params }: { params: { quizId: string } }) {
             <CardDescription>Go back and start the quiz.</CardDescription>
           </CardHeader>
           <CardContent>
-            <Button onClick={() => router.push(`/q/${params.quizId}?cohort=${encodeURIComponent(cohort)}`)}>
+            <Button onClick={() => router.push(`/q/${quizId}?cohort=${encodeURIComponent(cohort)}`)}>
               Back
             </Button>
           </CardContent>
