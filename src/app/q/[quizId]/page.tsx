@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -31,9 +31,11 @@ function lsSet(key: string, val: string) {
   }
 }
 
-export default function JoinPage({ params }: { params: { quizId: string } }) {
+export default function JoinPage() {
   const router = useRouter();
   const sp = useSearchParams();
+  const routeParams = useParams<{ quizId: string }>();
+  const quizId = String(routeParams?.quizId || "");
   const cohort = sp.get("cohort") || "cohort-1";
 
   const storageKey = useMemo(() => `bcq.identity`, []);
@@ -56,6 +58,10 @@ export default function JoinPage({ params }: { params: { quizId: string } }) {
   async function onStart() {
     const cleanName = name.trim();
     if (!cleanName) return;
+    if (!quizId) {
+      alert("Missing quiz id in URL");
+      return;
+    }
 
     lsSet(storageKey, JSON.stringify({ name: cleanName, whatsapp: whatsapp.trim() || null }));
 
@@ -64,13 +70,18 @@ export default function JoinPage({ params }: { params: { quizId: string } }) {
       const res = await fetch("/api/attempts/start", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ quizId: params.quizId, cohort }),
+        body: JSON.stringify({ quizId, cohort }),
       });
       const data = (await res.json()) as StartResp | { error?: string };
       if (!res.ok) throw new Error(("error" in data && data.error) ? data.error : "Failed to start");
 
-      lsSet(`bcq.attempt.${data.attemptId}`, JSON.stringify({ ...data, displayName: cleanName, whatsapp: whatsapp.trim() || null }));
-      router.push(`/q/${params.quizId}/play?cohort=${encodeURIComponent(cohort)}&attemptId=${encodeURIComponent(data.attemptId)}`);
+      lsSet(
+        `bcq.attempt.${data.attemptId}`,
+        JSON.stringify({ ...data, displayName: cleanName, whatsapp: whatsapp.trim() || null })
+      );
+      router.push(
+        `/q/${quizId}/play?cohort=${encodeURIComponent(cohort)}&attemptId=${encodeURIComponent(data.attemptId)}`
+      );
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Failed to start";
       alert(msg);
