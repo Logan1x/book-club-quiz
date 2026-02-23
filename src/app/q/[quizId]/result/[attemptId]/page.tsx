@@ -60,11 +60,13 @@ export default function ResultPage({ params }: { params: { quizId: string; attem
       const blob = await res.blob();
       const file = new File([blob], "quiz-result.png", { type: "image/png" });
 
-      // Try native share first
-      // @ts-expect-error - canShare is not in TS lib for some targets
-      if (navigator.share && navigator.canShare?.({ files: [file] })) {
-        // @ts-expect-error - share files typing varies by browser
-        await navigator.share({ files: [file], title: "Quiz result" });
+      // Try native share first (typing varies by TS lib target)
+      const nav = navigator as unknown as {
+        share?: (data: unknown) => Promise<void>;
+        canShare?: (data: unknown) => boolean;
+      };
+      if (nav.share && nav.canShare?.({ files: [file] })) {
+        await nav.share({ files: [file], title: "Quiz result" });
         return;
       }
 

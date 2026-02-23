@@ -75,6 +75,8 @@ export default function JoinPage() {
       const data = (await res.json()) as StartResp | { error?: string };
       if (!res.ok) throw new Error(("error" in data && data.error) ? data.error : "Failed to start");
 
+      if (!('attemptId' in data)) throw new Error("Failed to start");
+
       lsSet(
         `bcq.attempt.${data.attemptId}`,
         JSON.stringify({ ...data, displayName: cleanName, whatsapp: whatsapp.trim() || null })
