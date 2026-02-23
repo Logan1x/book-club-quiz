@@ -50,8 +50,9 @@ function formatTime(ms: number) {
 export default function PlayPage() {
   const router = useRouter();
   const sp = useSearchParams();
-  const routeParams = useParams<{ quizId: string }>();
-  const quizId = String(routeParams?.quizId || "");
+  const routeParams = useParams<{ quizId?: string | string[] }>();
+  const routeQuizIdRaw = routeParams?.quizId;
+  const routeQuizId = Array.isArray(routeQuizIdRaw) ? routeQuizIdRaw[0] : routeQuizIdRaw;
   const cohort = sp.get("cohort") || "cohort-1";
   const attemptId = sp.get("attemptId") || "";
 
@@ -66,16 +67,19 @@ export default function PlayPage() {
     const raw = lsGet(`bcq.attempt.${attemptId}`);
     if (!raw) return null;
     try {
-      return JSON.parse(raw);
+      return JSON.parse(raw) as AttemptStart;
     } catch {
       return null;
     }
   }, [attemptId]);
 
+  // Prefer quizId from the attempt (server-issued) to avoid params Promise/undefined issues.
+  const quizId = String(attempt?.quizId || routeQuizId || "");
+
   useEffect(() => {
     let ok = true;
-    if (!quizId) return;
-    fetch(`/api/quiz/${quizId}`)
+    if (!quizId || quizId === "undefined") return;
+    fetch(`/api/quiz/${encodeURIComponent(quizId)}`)
       .then((r) => r.json())
       .then((j) => {
         if (!ok) return;
