@@ -1,71 +1,67 @@
 "use client";
 
-import { useMemo } from "react";
-import { useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
+import { useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 
-// MVP placeholder: until Neon is wired, we can only show "your" last result (from localStorage).
-function lsGet(key: string) {
-  try {
-    return localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
+type Row = {
+  rank: number;
+  attemptId: string;
+  displayName: string | null;
+  whatsapp: string | null;
+  correct: number | null;
+  total: number | null;
+  scorePct: number | null;
+  durationMs: number | null;
+  submittedAt: number | null;
+};
 
-export default function LeaderboardPage({ params }: { params: { quizId: string } }) {
+export default function LeaderboardPage() {
   const sp = useSearchParams();
   const cohort = sp.get("cohort") || "cohort-1";
+  const p = useParams<{ quizId?: string | string[] }>();
+  const quizId = String(Array.isArray(p?.quizId) ? p?.quizId[0] : p?.quizId || "");
 
-  const myLast = useMemo(() => {
-    // naive scan of localStorage keys
-    const items: Array<{ attemptId: string; quizId: string; cohort?: string; displayName?: string; correct: number; total: number; scorePct: number; durationMs: number }> = [];
-    try {
-      for (let i = 0; i < localStorage.length; i++) {
-        const k = localStorage.key(i) || "";
-        if (!k.startsWith("bcq.result.")) continue;
-        const raw = lsGet(k);
-        if (!raw) continue;
-        const j = JSON.parse(raw) as { attemptId?: string; quizId?: string; cohort?: string; displayName?: string; correct?: number; total?: number; scorePct?: number; durationMs?: number };
-        if (
-          j?.attemptId &&
-          j?.quizId === params.quizId &&
-          (j?.cohort || cohort) === cohort &&
-          typeof j.correct === "number" &&
-          typeof j.total === "number" &&
-          typeof j.scorePct === "number" &&
-          typeof j.durationMs === "number"
-        ) {
-          items.push({
-            attemptId: j.attemptId,
-            quizId: j.quizId,
-            cohort: j.cohort,
-            displayName: j.displayName,
-            correct: j.correct,
-            total: j.total,
-            scorePct: j.scorePct,
-            durationMs: j.durationMs,
-          });
-        }
-      }
-    } catch {
-      // ignore
-    }
-    items.sort((a, b) => (b.scorePct - a.scorePct) || (a.durationMs - b.durationMs));
-    return items.slice(0, 10);
-  }, [params.quizId, cohort]);
+  const [rows, setRows] = useState<Row[] | null>(null);
+  const [err, setErr] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!quizId) return;
+
+    let alive = true;
+
+    fetch(`/api/leaderboard?quizId=${encodeURIComponent(quizId)}&cohort=${encodeURIComponent(cohort)}&limit=50`)
+      .then((r) => r.json().then((j) => ({ ok: r.ok, j })))
+      .then(({ ok, j }) => {
+        if (!alive) return;
+        if (!ok) throw new Error(j?.error || "Failed to load leaderboard");
+        setErr(null);
+        setRows(j.leaderboard as Row[]);
+      })
+      .catch((e: unknown) => {
+        if (!alive) return;
+        setErr(e instanceof Error ? e.message : "Failed to load leaderboard");
+        setRows([]);
+      });
+
+    return () => {
+      alive = false;
+    };
+  }, [quizId, cohort]);
 
   return (
     <main className="mx-auto flex min-h-screen max-w-2xl flex-col justify-center p-6">
       <Card>
         <CardHeader>
-          <CardTitle>Leaderboard (MVP)</CardTitle>
+          <CardTitle>Leaderboard</CardTitle>
           <CardDescription>
-            Cohort: <span className="font-mono">{cohort}</span> · This is currently device-local.
+            Quiz: <span className="font-mono">{quizId}</span> · Cohort:{" "}
+            <span className="font-mono">{cohort}</span>
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {err ? <div className="mb-3 text-sm text-red-600">{err}</div> : null}
           <Table>
             <TableHeader>
               <TableRow>
@@ -76,21 +72,27 @@ export default function LeaderboardPage({ params }: { params: { quizId: string }
               </TableRow>
             </TableHeader>
             <TableBody>
-              {myLast.length === 0 ? (
+              {rows === null ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-muted-foreground">
-                    No attempts yet on this device.
+                    Loading…
+                  </TableCell>
+                </TableRow>
+              ) : rows.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="text-muted-foreground">
+                    No submissions yet.
                   </TableCell>
                 </TableRow>
               ) : (
-                myLast.map((r, i) => (
+                rows.map((r) => (
                   <TableRow key={r.attemptId}>
-                    <TableCell>#{i + 1}</TableCell>
+                    <TableCell>#{r.rank}</TableCell>
                     <TableCell>{r.displayName || "(anon)"}</TableCell>
                     <TableCell>
-                      {r.correct}/{r.total}
+                      {r.correct ?? 0}/{r.total ?? 0}
                     </TableCell>
-                    <TableCell>{Math.round(r.durationMs / 1000)}s</TableCell>
+                    <TableCell>{Math.round((r.durationMs ?? 0) / 1000)}s</TableCell>
                   </TableRow>
                 ))
               )}

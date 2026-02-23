@@ -92,14 +92,22 @@ export default function ResultPage() {
       const blob = await res.blob();
       const file = new File([blob], "quiz-result.png", { type: "image/png" });
 
-      // Try native share first (typing varies by TS lib target)
+      // Try native share first (some browsers report canShare=false on repeat)
       const nav = navigator as unknown as {
         share?: (data: unknown) => Promise<void>;
         canShare?: (data: unknown) => boolean;
       };
-      if (nav.share && nav.canShare?.({ files: [file] })) {
-        await nav.share({ files: [file], title: "Quiz result" });
-        return;
+      if (nav.share) {
+        try {
+          await nav.share({ files: [file], title: "Quiz result" });
+          return;
+        } catch (err: unknown) {
+          // If user cancels share sheet, don't force a download.
+          if (err && typeof err === "object" && "name" in err && (err as { name?: string }).name === "AbortError") {
+            return;
+          }
+          // Otherwise fall through to download.
+        }
       }
 
       // Fallback: download
