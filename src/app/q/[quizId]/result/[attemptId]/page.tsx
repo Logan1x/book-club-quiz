@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -23,23 +23,55 @@ function msToHuman(ms: number) {
   return `${mm}m ${ss}s`;
 }
 
-export default function ResultPage({ params }: { params: { quizId: string; attemptId: string } }) {
+export default function ResultPage() {
   const router = useRouter();
   const sp = useSearchParams();
+  const routeParams = useParams<{ quizId?: string | string[]; attemptId?: string | string[] }>();
+  const quizIdRaw = routeParams?.quizId;
+  const attemptIdRaw = routeParams?.attemptId;
+  const quizId = String(Array.isArray(quizIdRaw) ? quizIdRaw[0] : quizIdRaw || "");
+  const attemptId = String(Array.isArray(attemptIdRaw) ? attemptIdRaw[0] : attemptIdRaw || "");
   const cohort = sp.get("cohort") || "cohort-1";
 
   const [busy, setBusy] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
 
-  const result = useMemo(() => {
-    const raw = lsGet(`bcq.result.${params.attemptId}`);
+  const cached = useMemo(() => {
+    if (!attemptId) return null;
+    const raw = lsGet(`bcq.result.${attemptId}`);
     if (!raw) return null;
     try {
       return JSON.parse(raw);
     } catch {
       return null;
     }
-  }, [params.attemptId]);
+  }, [attemptId]);
+
+  type ResultShape = {
+    attemptId: string;
+    quizId: string;
+    cohort: string;
+    displayName?: string | null;
+    whatsapp?: string | null;
+    durationMs?: number | null;
+    correct?: number | null;
+    total?: number | null;
+    scorePct?: number | null;
+    rank?: { position: number; total: number };
+  };
+
+  const [result, setResult] = useState<ResultShape | null>(cached as ResultShape | null);
+
+  useEffect(() => {
+    if (result) return;
+    if (!attemptId) return;
+    fetch(`/api/attempts/${encodeURIComponent(attemptId)}`)
+      .then((r) => r.json())
+      .then((j) => setResult(j))
+      .catch(() => {
+        // ignore
+      });
+  }, [attemptId, result]);
 
   useEffect(() => {
     if (!result) {
@@ -84,7 +116,7 @@ export default function ResultPage({ params }: { params: { quizId: string; attem
   }
 
   function onWhatsAppLink() {
-    const url = `${window.location.origin}/q/${params.quizId}/leaderboard?cohort=${encodeURIComponent(cohort)}`;
+    const url = `${window.location.origin}/q/${quizId}/leaderboard?cohort=${encodeURIComponent(cohort)}`;
     const text = `I just finished the quiz! Leaderboard: ${url}`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
@@ -98,7 +130,7 @@ export default function ResultPage({ params }: { params: { quizId: string; attem
             <CardDescription>Finish the quiz first.</CardDescription>
           </CardHeader>
           <CardContent className="flex gap-2">
-            <Button onClick={() => router.push(`/q/${params.quizId}?cohort=${encodeURIComponent(cohort)}`)}>
+            <Button onClick={() => router.push(`/q/${quizId}?cohort=${encodeURIComponent(cohort)}`)}>
               Start
             </Button>
             <Button variant="secondary" onClick={() => router.push(`/`)}>
@@ -130,7 +162,7 @@ export default function ResultPage({ params }: { params: { quizId: string; attem
           </div>
           <div className="rounded-lg border p-3">
             <div className="text-xs text-muted-foreground">Time</div>
-            <div className="text-xl font-semibold">{msToHuman(result.durationMs)}</div>
+            <div className="text-xl font-semibold">{msToHuman(result.durationMs ?? 0)}</div>
           </div>
           <div className="rounded-lg border p-3">
             <div className="text-xs text-muted-foreground">Rank</div>
@@ -156,7 +188,10 @@ export default function ResultPage({ params }: { params: { quizId: string; attem
           <Button variant="secondary" onClick={onWhatsAppLink}>
             Share leaderboard link on WhatsApp
           </Button>
-          <Button variant="outline" onClick={() => router.push(`/q/${params.quizId}/leaderboard?cohort=${encodeURIComponent(cohort)}`)}>
+          <Button
+            variant="outline"
+            onClick={() => router.push(`/q/${quizId}/leaderboard?cohort=${encodeURIComponent(cohort)}`)}
+          >
             View leaderboard
           </Button>
         </CardContent>
