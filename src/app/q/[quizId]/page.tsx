@@ -36,7 +36,7 @@ export default function JoinPage() {
   const sp = useSearchParams();
   const routeParams = useParams<{ quizId: string }>();
   const quizId = String(routeParams?.quizId || "");
-  const cohort = sp.get("cohort") || "cohort-1";
+  const cohort = sp.get("cohort") || "cohort-3";
 
   const storageKey = useMemo(() => `bcq.identity`, []);
   const [name, setName] = useState("");

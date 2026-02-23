@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { loadQuiz } from "@/lib/quizzes";
+import { db } from "@/lib/db";
+import { quizzes } from "@/lib/schema";
+import { eq } from "drizzle-orm";
+
+export const runtime = "nodejs";
 
 export async function GET(
   _req: Request,
@@ -7,11 +11,9 @@ export async function GET(
 ) {
   const { quizId } = await ctx.params;
 
-  try {
-    const quiz = loadQuiz(quizId);
-    return NextResponse.json(quiz);
-  } catch (e: unknown) {
-    const msg = e instanceof Error ? e.message : "Quiz not found";
-    return NextResponse.json({ error: msg }, { status: 404 });
-  }
+  const rows = await db.select({ content: quizzes.content }).from(quizzes).where(eq(quizzes.quizId, quizId)).limit(1);
+  const q = rows[0]?.content;
+
+  if (!q) return NextResponse.json({ error: "Quiz not found" }, { status: 404 });
+  return NextResponse.json(q);
 }

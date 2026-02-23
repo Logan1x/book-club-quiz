@@ -47,7 +47,7 @@ function relTime(ts: number | null) {
 
 export default function LeaderboardPage() {
   const sp = useSearchParams();
-  const cohort = sp.get("cohort") || "cohort-1";
+  const cohort = sp.get("cohort") || "cohort-3";
   const p = useParams<{ quizId?: string | string[] }>();
   const quizId = String(Array.isArray(p?.quizId) ? p?.quizId[0] : p?.quizId || "");
 

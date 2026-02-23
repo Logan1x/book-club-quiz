@@ -53,7 +53,7 @@ export default function PlayPage() {
   const routeParams = useParams<{ quizId?: string | string[] }>();
   const routeQuizIdRaw = routeParams?.quizId;
   const routeQuizId = Array.isArray(routeQuizIdRaw) ? routeQuizIdRaw[0] : routeQuizIdRaw;
-  const cohort = sp.get("cohort") || "cohort-1";
+  const cohort = sp.get("cohort") || "cohort-3";
   const attemptId = sp.get("attemptId") || "";
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);

@@ -13,7 +13,7 @@ export default function Home() {
       <div className="space-y-2">
         <Link
           className="underline"
-          href="/q/sophies-world-ch1-3?cohort=cohort-1"
+          href="/q/sophies-world-ch1-3-adult-cohort-v1?cohort=cohort-3"
         >
           Start: Sophie’s World (Ch 1–3)
         </Link>
