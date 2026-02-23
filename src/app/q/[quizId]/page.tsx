@@ -96,7 +96,8 @@ export default function JoinPage() {
         <CardHeader>
           <CardTitle>Join quiz</CardTitle>
           <CardDescription>
-            Timed: 6 minutes. Cohort: <span className="font-mono">{cohort}</span>
+            Quiz: <span className="font-mono">{quizId || "(missing)"}</span> · Timed: 6 minutes · Cohort:{" "}
+            <span className="font-mono">{cohort}</span>
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -110,7 +111,7 @@ export default function JoinPage() {
             <p className="text-xs text-muted-foreground">Saved locally on this device for next time.</p>
           </div>
 
-          <Button disabled={busy || !name.trim()} onClick={onStart} className="w-full">
+          <Button disabled={busy || !name.trim() || !quizId} onClick={onStart} className="w-full">
             {busy ? "Starting…" : "Start quiz"}
           </Button>
         </CardContent>
