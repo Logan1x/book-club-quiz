@@ -1,0 +1,180 @@
+{
+  "quizId": "sophies-world-ch1-3-adult-cohort-v1",
+  "book": {
+    "title": "Sophie’s World",
+    "chaptersCovered": [
+      { "number": 1, "title": "The Garden of Eden" },
+      { "number": 2, "title": "The Top Hat" },
+      { "number": 3, "title": "The Myths" }
+    ]
+  },
+  "audience": "Adult book club cohort (intellectual discussion)",
+  "format": { "type": "mcq", "questions": 15, "optionsPerQuestion": 4 },
+  "questions": [
+    {
+      "id": "q01",
+      "chapter": 1,
+      "prompt": "In Chapter 1, the discussion about robots primarily functions as what kind of opening move by the author?",
+      "options": [
+        "A wedge that turns ordinary talk into a question about what a human being is",
+        "A prediction that the plot will become science-fiction driven",
+        "A warning that technology will replace education",
+        "A metaphor for Sophie’s dislike of Joanna"
+      ]
+    },
+    {
+      "id": "q02",
+      "chapter": 1,
+      "prompt": "Sophie’s house ‘at the end of the world’ (edge of suburb, woods beyond) most strongly signals:",
+      "options": [
+        "A psychological boundary—she is positioned at the edge of the familiar, facing the unknown",
+        "A socioeconomic clue—she is poorer than her classmates",
+        "A future setting shift—the story will move into the forest permanently",
+        "A literal survival theme—nature will be the central conflict"
+      ]
+    },
+    {
+      "id": "q03",
+      "chapter": 1,
+      "prompt": "Joanna’s ‘brain as an advanced computer’ claim is best read as representing which philosophical stance?",
+      "options": [
+        "Materialism / reductionism (mind explained fully by physical processes)",
+        "Dualism (mind and body are separate substances)",
+        "Idealism (reality is fundamentally mental)",
+        "Skepticism (nothing can be known)"
+      ]
+    },
+    {
+      "id": "q04",
+      "chapter": 1,
+      "prompt": "Sophie’s hesitation about the computer analogy implies a commitment (even if unformed) to:",
+      "options": [
+        "The idea that lived experience (subjectivity) isn’t captured by ‘hardware’ descriptions",
+        "The belief that humans have no physical basis at all",
+        "The view that robots are morally evil",
+        "The belief that school should teach only practical skills"
+      ]
+    },
+    {
+      "id": "q05",
+      "chapter": 1,
+      "prompt": "The chapter title ‘The Garden of Eden’ is most likely doing what, at this early stage?",
+      "options": [
+        "Framing the story as an origin-question narrative: beginnings, innocence, and first questions",
+        "Hinting Sophie will study theology instead of philosophy",
+        "Indicating a romantic subplot is about to start",
+        "Referring to a real park Sophie will visit"
+      ]
+    },
+    {
+      "id": "q06",
+      "chapter": 2,
+      "prompt": "In Chapter 2, Sophie’s frustration with school (‘trivialities’) is best understood as:",
+      "options": [
+        "A clash between institutional learning and existential inquiry",
+        "A sign she dislikes learning languages specifically",
+        "A plot device to make her skip school later",
+        "A complaint that teachers are personally unfair to her"
+      ]
+    },
+    {
+      "id": "q07",
+      "chapter": 2,
+      "prompt": "The quote about philosophy requiring the ‘faculty of wonder’ positions wonder as:",
+      "options": [
+        "The engine that turns the obvious into a problem worth thinking about",
+        "A childish phase to outgrow",
+        "A synonym for having many opinions",
+        "A talent for winning debates"
+      ]
+    },
+    {
+      "id": "q08",
+      "chapter": 2,
+      "prompt": "Sophie’s choice to keep the letters secret (for now) most strongly suggests:",
+      "options": [
+        "She senses the questions are intimate—something to ‘own’ before socializing",
+        "She is afraid Joanna will steal her homework",
+        "She suspects her father is sending them",
+        "She is planning to run away"
+      ]
+    },
+    {
+      "id": "q09",
+      "chapter": 2,
+      "prompt": "The contrast ‘thinking about big questions’ vs ‘memorizing irregular verbs’ is mainly used to highlight:",
+      "options": [
+        "A hierarchy of meaning—skills matter, but they’re not the same as understanding existence",
+        "That languages are useless",
+        "That Sophie is academically weak",
+        "That her teachers are incompetent"
+      ]
+    },
+    {
+      "id": "q10",
+      "chapter": 2,
+      "prompt": "The title ‘The Top Hat’ most plausibly signals the chapter’s theme of:",
+      "options": [
+        "Everyday reality as a kind of stage trick—how the familiar can hide the mysterious",
+        "A coming fashion trend at Sophie’s school",
+        "A literal character who wears a top hat",
+        "A political symbol"
+      ]
+    },
+    {
+      "id": "q11",
+      "chapter": 3,
+      "prompt": "Chapter 3 places a letter from Sophie’s father alongside the mysterious brown envelope. What effect does this pairing create?",
+      "options": [
+        "It heightens suspense by juxtaposing ordinary affection with uncanny inquiry",
+        "It resolves the mystery by confirming the father sent the envelopes",
+        "It shifts the story away from philosophy into travel writing",
+        "It shows Sophie no longer cares about her father"
+      ]
+    },
+    {
+      "id": "q12",
+      "chapter": 3,
+      "prompt": "The chapter’s opening boredom (‘interminable day’) serves which deeper purpose?",
+      "options": [
+        "It makes the arrival of philosophical mystery feel like relief and necessity, not entertainment",
+        "It proves Sophie is lazy",
+        "It foreshadows that school will be cancelled",
+        "It indicates the author dislikes teachers"
+      ]
+    },
+    {
+      "id": "q13",
+      "chapter": 3,
+      "prompt": "The title ‘The Myths’ most naturally connects to Sophie’s situation by suggesting myths are:",
+      "options": [
+        "Early frameworks humans used to explain what later becomes philosophy",
+        "Pure lies told to control children",
+        "Only religious propaganda",
+        "Unrelated to real life—just stories"
+      ]
+    },
+    {
+      "id": "q14",
+      "chapter": 3,
+      "prompt": "The quote about a balance between good and evil most strongly prepares the reader for:",
+      "options": [
+        "Mythic thinking as a way to map moral and cosmic order onto the world",
+        "A detective plot with criminals",
+        "A coming war scene",
+        "A sports rivalry"
+      ]
+    },
+    {
+      "id": "q15",
+      "chapter": 1,
+      "prompt": "Across Chapters 1–3, what is the most consistent ‘trigger’ that moves Sophie from routine life into philosophical attention?",
+      "options": [
+        "Moments where the everyday cracks open—ordinary scenes become questions (mind, world, meaning)",
+        "A desire to outperform Joanna academically",
+        "A plan to become a scientist",
+        "A dislike of her neighborhood"
+      ]
+    }
+  ]
+}
