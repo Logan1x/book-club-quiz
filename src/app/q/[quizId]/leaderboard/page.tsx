@@ -113,7 +113,19 @@ export default function LeaderboardPage() {
     if (!shareRef.current) return;
     setShareBusy(true);
     try {
-      const dataUrl = await toPng(shareRef.current, { cacheBust: true, pixelRatio: 2 });
+      const node = shareRef.current;
+      const rect = node.getBoundingClientRect();
+      const dataUrl = await toPng(node, {
+        cacheBust: true,
+        pixelRatio: 2,
+        backgroundColor: "#ffffff",
+        width: Math.ceil(rect.width),
+        height: Math.ceil(rect.height),
+        style: {
+          left: "0px",
+          top: "0px",
+        },
+      });
       const res = await fetch(dataUrl);
       const blob = await res.blob();
       const file = new File([blob], "leaderboard.png", { type: "image/png" });
