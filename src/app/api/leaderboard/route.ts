@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { db } from "@/lib/db";
-import { attempts } from "@/lib/schema";
-import { and, asc, desc, eq, isNotNull } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 
 export const runtime = "nodejs";
 
@@ -15,25 +14,50 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: "quizId is required" }, { status: 400 });
   }
 
-  // For MVP: show ALL submitted attempts (not deduped per person).
-  // We'll later switch to "best attempt per (name+whatsapp)".
-  const rows = await db
-    .select({
-      attemptId: attempts.attemptId,
-      displayName: attempts.displayName,
-      whatsapp: attempts.whatsapp,
-      correct: attempts.correct,
-      total: attempts.total,
-      scorePct: attempts.scorePct,
-      durationMs: attempts.durationMs,
-      submittedAt: attempts.submittedAt,
-    })
-    .from(attempts)
-    .where(and(eq(attempts.quizId, quizId), eq(attempts.cohort, cohort), isNotNull(attempts.submittedAt)))
-    .orderBy(desc(attempts.scorePct), asc(attempts.durationMs), asc(attempts.submittedAt))
-    .limit(limit);
+  // Best attempt per person (participant_key). If participant_key is null, fall back to attempt_id.
+  // Postgres DISTINCT ON picks the first row per key based on the ORDER BY.
+  const rows = await db.execute(
+    sql`
+      SELECT DISTINCT ON (COALESCE(participant_key, attempt_id))
+        attempt_id AS "attemptId",
+        display_name AS "displayName",
+        whatsapp AS "whatsapp",
+        correct AS "correct",
+        total AS "total",
+        score_pct AS "scorePct",
+        duration_ms AS "durationMs",
+        submitted_at AS "submittedAt"
+      FROM attempts
+      WHERE quiz_id = ${quizId} AND cohort = ${cohort} AND submitted_at IS NOT NULL
+      ORDER BY
+        COALESCE(participant_key, attempt_id),
+        score_pct DESC,
+        duration_ms ASC,
+        submitted_at ASC
+      LIMIT ${limit};
+    `
+  );
 
-  const leaderboard = rows.map((r, i) => ({
+  type LbRow = {
+    attemptId: string;
+    displayName: string | null;
+    whatsapp: string | null;
+    correct: number | null;
+    total: number | null;
+    scorePct: number | null;
+    durationMs: number | null;
+    submittedAt: string | null;
+  };
+
+  const sorted = (rows as unknown as { rows: LbRow[] }).rows.sort((a, b) => {
+    const s = (b.scorePct ?? 0) - (a.scorePct ?? 0);
+    if (s !== 0) return s;
+    const t = (a.durationMs ?? 0) - (b.durationMs ?? 0);
+    if (t !== 0) return t;
+    return new Date(a.submittedAt ?? 0).getTime() - new Date(b.submittedAt ?? 0).getTime();
+  });
+
+  const leaderboard = sorted.map((r, i) => ({
     rank: i + 1,
     attemptId: r.attemptId,
     displayName: r.displayName,
@@ -42,7 +66,7 @@ export async function GET(req: Request) {
     total: r.total,
     scorePct: r.scorePct,
     durationMs: r.durationMs,
-    submittedAt: r.submittedAt ? r.submittedAt.getTime() : null,
+    submittedAt: r.submittedAt ? new Date(r.submittedAt).getTime() : null,
   }));
 
   return NextResponse.json({ quizId, cohort, leaderboard });
