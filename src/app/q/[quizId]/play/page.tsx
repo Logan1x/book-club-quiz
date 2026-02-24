@@ -40,6 +40,14 @@ function lsSet(key: string, val: string) {
   }
 }
 
+function lsRemove(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
+}
+
 function formatTime(ms: number) {
   const s = Math.max(0, Math.floor(ms / 1000));
   const mm = String(Math.floor(s / 60)).padStart(2, "0");
@@ -53,7 +61,7 @@ export default function PlayPage() {
   const routeParams = useParams<{ quizId?: string | string[] }>();
   const routeQuizIdRaw = routeParams?.quizId;
   const routeQuizId = Array.isArray(routeQuizIdRaw) ? routeQuizIdRaw[0] : routeQuizIdRaw;
-  const cohort = sp.get("cohort") || "cohort-1";
+  const cohort = sp.get("cohort") || "cohort-3";
   const attemptId = sp.get("attemptId") || "";
 
   const [quiz, setQuiz] = useState<Quiz | null>(null);
@@ -61,6 +69,8 @@ export default function PlayPage() {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [now, setNow] = useState(Date.now());
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [showIdentity, setShowIdentity] = useState(true);
 
   const attempt: AttemptStart | null = useMemo(() => {
     if (!attemptId) return null;
@@ -84,6 +94,11 @@ export default function PlayPage() {
       .then((j) => {
         if (!ok) return;
         setQuiz(j);
+        setError(null);
+      })
+      .catch((e: unknown) => {
+        if (!ok) return;
+        setError(e instanceof Error ? e.message : "Failed to load quiz");
       });
     return () => {
       ok = false;
@@ -117,6 +132,7 @@ export default function PlayPage() {
     if (!attempt || !quiz) return;
     if (busy) return;
     setBusy(true);
+    setError(null);
     try {
       const res = await fetch("/api/attempts/submit", {
         method: "POST",
@@ -140,9 +156,14 @@ export default function PlayPage() {
       router.push(`/q/${quizId}/result/${attemptId}?cohort=${encodeURIComponent(cohort)}`);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Submit failed";
-      alert(msg);
+      setError(msg);
       setBusy(false);
     }
+  }
+
+  function onForgetSavedDetails() {
+    lsRemove("bcq.identity");
+    setShowIdentity(false);
   }
 
   if (!attemptId || !attempt) {
@@ -169,9 +190,11 @@ export default function PlayPage() {
         <Card>
           <CardHeader>
             <CardTitle>Loading quiz…</CardTitle>
+            {attempt?.displayName ? <CardDescription>Loading for {attempt.displayName}</CardDescription> : null}
           </CardHeader>
           <CardContent>
             <Progress value={40} />
+            {error ? <p className="mt-3 text-sm text-red-600">{error}</p> : null}
           </CardContent>
         </Card>
       </main>
@@ -186,14 +209,26 @@ export default function PlayPage() {
       <div className="flex items-center justify-between gap-3">
         <div className="min-w-0">
           <div className="text-sm text-muted-foreground truncate">{quiz.book?.title || "Quiz"}</div>
-          <div className="text-sm font-medium">{attempt.displayName}</div>
         </div>
-        <div className="rounded-md border px-3 py-2 font-mono text-sm">
-          {formatTime(remaining)}
+        <div className="flex items-center gap-2">
+          {showIdentity && attempt.displayName ? (
+            <div className="hidden items-center gap-2 text-xs text-muted-foreground sm:flex">
+              <span>Playing as {attempt.displayName}</span>
+              <button
+                type="button"
+                onClick={onForgetSavedDetails}
+                className="underline underline-offset-2 hover:text-foreground"
+              >
+                Forget
+              </button>
+            </div>
+          ) : null}
+          <div className="rounded-sm border px-3 py-2 font-mono text-sm">{formatTime(remaining)}</div>
         </div>
       </div>
 
       <Progress value={progress} />
+      {error ? <p className="text-sm text-red-600">{error}</p> : null}
 
       <Card>
         <CardHeader>

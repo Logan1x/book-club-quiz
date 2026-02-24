@@ -7,6 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Separator } from "@/components/ui/separator";
 import { toPng } from "html-to-image";
 import { Badge } from "@/components/ui/badge";
+import { cohortLabel } from "@/lib/cohort";
 
 function lsGet(key: string) {
   try {
@@ -158,7 +159,7 @@ export default function ResultPage() {
             <div className="text-sm text-muted-foreground">Book Club Quiz</div>
             <div className="text-lg font-semibold leading-tight">Sophie’s World (Ch 1–3)</div>
           </div>
-          <Badge variant="secondary">{cohort}</Badge>
+          <Badge variant="secondary">{cohortLabel(cohort)}</Badge>
         </div>
 
         <Separator className="my-4" />

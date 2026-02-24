@@ -31,40 +31,74 @@ function lsSet(key: string, val: string) {
   }
 }
 
+function lsRemove(key: string) {
+  try {
+    localStorage.removeItem(key);
+  } catch {
+    // ignore
+  }
+}
+
 export default function JoinPage() {
   const router = useRouter();
   const sp = useSearchParams();
   const routeParams = useParams<{ quizId: string }>();
   const quizId = String(routeParams?.quizId || "");
-  const cohort = sp.get("cohort") || "cohort-1";
+  const cohort = sp.get("cohort") || "cohort-3";
 
   const storageKey = useMemo(() => `bcq.identity`, []);
   const [name, setName] = useState("");
   const [whatsapp, setWhatsapp] = useState("");
+  const [usingSavedIdentity, setUsingSavedIdentity] = useState(false);
+  const [hasAutoStarted, setHasAutoStarted] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const raw = lsGet(storageKey);
     if (!raw) return;
     try {
       const j = JSON.parse(raw);
-      if (j?.name) setName(String(j.name));
-      if (j?.whatsapp) setWhatsapp(String(j.whatsapp));
+      const savedName = String(j?.name || "").trim();
+      const savedWhatsapp = String(j?.whatsapp || "").trim();
+      if (savedName) {
+        setName(savedName);
+        setWhatsapp(savedWhatsapp);
+        setUsingSavedIdentity(true);
+      }
     } catch {
       // ignore
     }
   }, [storageKey]);
 
+  function onForgetSavedDetails() {
+    lsRemove(storageKey);
+    setUsingSavedIdentity(false);
+    setHasAutoStarted(false);
+    setName("");
+    setWhatsapp("");
+  }
+
+  useEffect(() => {
+    if (!usingSavedIdentity) return;
+    if (!name.trim()) return;
+    if (busy || hasAutoStarted) return;
+    setHasAutoStarted(true);
+    void onStart();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [usingSavedIdentity, name, busy, hasAutoStarted]);
+
   async function onStart() {
     const cleanName = name.trim();
     if (!cleanName) return;
     if (!quizId) {
-      alert("Missing quiz id in URL");
+      setError("Missing quiz id in URL");
       return;
     }
 
     lsSet(storageKey, JSON.stringify({ name: cleanName, whatsapp: whatsapp.trim() || null }));
 
+    setError(null);
     setBusy(true);
     try {
       const res = await fetch("/api/attempts/start", {
@@ -86,7 +120,7 @@ export default function JoinPage() {
       );
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Failed to start";
-      alert(msg);
+      setError(msg);
     } finally {
       setBusy(false);
     }
@@ -103,19 +137,37 @@ export default function JoinPage() {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Name</label>
-            <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
-          </div>
-          <div className="space-y-2">
-            <label className="text-sm font-medium">WhatsApp phone (optional)</label>
-            <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="+91…" />
-            <p className="text-xs text-muted-foreground">Saved locally on this device for next time.</p>
-          </div>
+          {usingSavedIdentity && name.trim() ? (
+            <>
+              <div className="text-sm text-muted-foreground">
+                You are signed in as <span className="font-medium text-foreground">{name}</span>
+                {whatsapp ? <span> ({whatsapp})</span> : null}
+              </div>
+              <Button disabled className="w-full">
+                {busy ? `Loading quiz for ${name}...` : `Preparing your quiz...`}
+              </Button>
+              <Button type="button" variant="outline" onClick={onForgetSavedDetails} className="w-full">
+                Forget saved details
+              </Button>
+            </>
+          ) : (
+            <>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Name</label>
+                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-medium">WhatsApp phone (optional)</label>
+                <Input value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} placeholder="+91…" />
+                <p className="text-xs text-muted-foreground">Saved locally on this device for next time.</p>
+              </div>
 
-          <Button disabled={busy || !name.trim() || !quizId} onClick={onStart} className="w-full">
-            {busy ? "Starting…" : "Start quiz"}
-          </Button>
+              <Button disabled={busy || !name.trim() || !quizId} onClick={onStart} className="w-full">
+                {busy ? "Loading quiz..." : "Start quiz"}
+              </Button>
+            </>
+          )}
+          {error ? <p className="text-sm text-red-600">{error}</p> : null}
         </CardContent>
       </Card>
     </main>

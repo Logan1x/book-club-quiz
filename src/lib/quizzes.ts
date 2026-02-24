@@ -1,6 +1,3 @@
-import fs from "node:fs";
-import path from "node:path";
-
 export type McqQuiz = {
   quizId: string;
   book?: {
@@ -22,32 +19,9 @@ export type AnswerKey = {
   answerKey: Array<{ id: string; answerIndex: number; answerLabel?: string }>;
 };
 
-function readJson<T>(filePath: string): T {
-  const raw = fs.readFileSync(filePath, "utf8");
-  return JSON.parse(raw) as T;
-}
-
-export function listQuizIds(): string[] {
-  // map file names to quizIds; keep it simple for now
-  return ["sophies-world-ch1-3"];
-}
-
-export function loadQuiz(quizId: string): McqQuiz {
-  const root = process.cwd();
-  const file = path.join(root, "src", "quizzes", `${quizId}.json`);
-  if (!fs.existsSync(file)) throw new Error(`Quiz not found: ${quizId}`);
-  return readJson<McqQuiz>(file);
-}
-
-export function loadAnswerKey(quizId: string): AnswerKey {
-  const root = process.cwd();
-  const file = path.join(root, "src", "quizzes", `${quizId}.answers.json`);
-  if (!fs.existsSync(file)) throw new Error(`Answer key not found: ${quizId}`);
-  return readJson<AnswerKey>(file);
-}
-
 export function scoreAttempt(params: {
-  quizId: string;
+  quiz: McqQuiz;
+  answerKey: AnswerKey;
   answers: Record<string, number>;
 }): {
   total: number;
@@ -55,8 +29,8 @@ export function scoreAttempt(params: {
   scorePct: number;
   perQuestion: Array<{ id: string; correct: boolean; correctIndex: number }>;
 } {
-  const quiz = loadQuiz(params.quizId);
-  const key = loadAnswerKey(params.quizId);
+  const quiz = params.quiz;
+  const key = params.answerKey;
 
   const keyMap = new Map(key.answerKey.map((x) => [x.id, x.answerIndex] as const));
 
