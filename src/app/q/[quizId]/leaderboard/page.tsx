@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
-import { toPng } from "html-to-image";
 import { cohortLabel } from "@/lib/cohort";
+import { cn } from "@/lib/utils";
 
 type Row = {
   rank: number;
@@ -20,6 +19,7 @@ type Row = {
   scorePct: number | null;
   durationMs: number | null;
   submittedAt: number | null;
+  attemptsCount: number;
 };
 
 function fmtSeconds(ms: number | null) {
@@ -56,8 +56,7 @@ export default function LeaderboardPage() {
 
   const [rows, setRows] = useState<Row[] | null>(null);
   const [err, setErr] = useState<string | null>(null);
-  const [shareBusy, setShareBusy] = useState(false);
-  const shareRef = useRef<HTMLDivElement | null>(null);
+  const [attemptsCount, setAttemptsCount] = useState(0);
 
   const identity = useMemo(() => {
     try {
@@ -82,11 +81,13 @@ export default function LeaderboardPage() {
         if (!ok) throw new Error(j?.error || "Failed to load leaderboard");
         setErr(null);
         setRows(j.leaderboard as Row[]);
+        setAttemptsCount(Number(j?.attemptsCount || 0));
       })
       .catch((e: unknown) => {
         if (!alive) return;
         setErr(e instanceof Error ? e.message : "Failed to load leaderboard");
         setRows([]);
+        setAttemptsCount(0);
       });
 
     return () => {
@@ -96,7 +97,6 @@ export default function LeaderboardPage() {
 
   const stats = useMemo(() => {
     if (!rows || rows.length === 0) return null;
-    const best = rows[0];
     const me = rows.find(
       (r) =>
         (identity.name && r.displayName?.trim() === identity.name.trim()) ||
@@ -104,124 +104,49 @@ export default function LeaderboardPage() {
     );
     return {
       total: rows.length,
-      best,
       me,
     };
   }, [rows, identity.name, identity.whatsapp]);
 
-  async function onShareLeaderboard() {
-    if (!shareRef.current) return;
-    setShareBusy(true);
-    try {
-      const node = shareRef.current;
-      const rect = node.getBoundingClientRect();
-      const dataUrl = await toPng(node, {
-        cacheBust: true,
-        pixelRatio: 2,
-        backgroundColor: "#ffffff",
-        width: Math.ceil(rect.width),
-        height: Math.ceil(rect.height),
-        style: {
-          left: "0px",
-          top: "0px",
-        },
-      });
-      const res = await fetch(dataUrl);
-      const blob = await res.blob();
-      const file = new File([blob], "leaderboard.png", { type: "image/png" });
-
-      const nav = navigator as unknown as {
-        share?: (data: unknown) => Promise<void>;
-      };
-      if (nav.share) {
-        try {
-          await nav.share({ files: [file], title: "Leaderboard" });
-          return;
-        } catch {
-          // fallthrough
-        }
-      }
-
-      const a = document.createElement("a");
-      a.href = dataUrl;
-      a.download = "leaderboard.png";
-      a.click();
-    } finally {
-      setShareBusy(false);
-    }
-  }
-
   return (
-    <main className="mx-auto flex min-h-screen max-w-3xl flex-col justify-center p-6">
-      <Card>
+    <main className="min-h-screen bg-[#f8f5ef] text-[#1d1b18]">
+      <div className="mx-auto flex w-full max-w-3xl flex-col justify-center p-6">
+      <Card className="rounded-md border-[#dfd5c7] bg-white shadow-none animate-in fade-in-0 slide-in-from-bottom-2 duration-400">
         <CardHeader>
           <div className="flex flex-wrap items-start justify-between gap-3">
             <div>
-              <CardTitle>Leaderboard</CardTitle>
-              <CardDescription>
+              <CardTitle className="font-display text-3xl">Leaderboard</CardTitle>
+              <CardDescription className="text-[#655b50]">
                 Quiz: <span className="font-mono">{quizId}</span> · Cohort:{" "}
                 <span className="font-mono">{cohortLabel(cohort)}</span>
               </CardDescription>
             </div>
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">Ranked by score ↓ then time ↑</Badge>
-              {stats?.total ? <Badge variant="outline">{stats.total} submissions</Badge> : null}
-              <Button variant="secondary" onClick={onShareLeaderboard} disabled={shareBusy || rows === null}>
-                {shareBusy ? "Preparing…" : "Share image"}
-              </Button>
+              {stats?.total ? <Badge variant="outline">{stats.total} best attempts</Badge> : null}
+              <Badge variant="outline">{attemptsCount} total attempts</Badge>
             </div>
           </div>
         </CardHeader>
 
         <CardContent className="space-y-4">
-          {/* Offscreen share card (Top 10) */}
-          <div
-            ref={shareRef}
-            style={{ position: "fixed", left: -9999, top: 0, width: 720, padding: 24, background: "white", color: "black" }}
-          >
-            <div style={{ fontSize: 14, opacity: 0.7 }}>Book Club Quiz</div>
-            <div style={{ fontSize: 20, fontWeight: 700, marginTop: 6 }}>Leaderboard</div>
-            <div style={{ fontSize: 14, marginTop: 4, opacity: 0.75 }}>
-              {quizId} · {cohortLabel(cohort)}
-            </div>
-            <div style={{ marginTop: 16, borderTop: "1px solid #e5e7eb" }} />
-            <div style={{ marginTop: 12 }}>
-              {(rows || []).slice(0, 10).map((r) => (
-                <div
-                  key={r.attemptId}
-                  style={{ display: "flex", justifyContent: "space-between", gap: 12, padding: "10px 0", borderBottom: "1px solid #f1f5f9" }}
-                >
-                  <div style={{ display: "flex", gap: 10 }}>
-                    <div style={{ width: 42, fontWeight: 700 }}>#{r.rank}</div>
-                    <div>
-                      <div style={{ fontWeight: 600 }}>{r.displayName || "(anon)"}</div>
-                      <div style={{ fontSize: 12, opacity: 0.7 }}>Time: {fmtSeconds(r.durationMs)} · Submitted {relTime(r.submittedAt)}</div>
-                    </div>
-                  </div>
-                  <div style={{ fontWeight: 700 }}>
-                    {(r.correct ?? 0)}/{(r.total ?? 0)} ({r.scorePct ?? 0}%)
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {err ? <div className="text-sm text-red-600">{err}</div> : null}
 
           {stats?.me ? (
-            <div className="rounded-xl border p-4">
+            <div className="rounded-md border border-[#dfd5c7] bg-[#fffcf7] p-4">
               <div className="flex items-center justify-between gap-3">
                 <div className="min-w-0">
-                  <div className="text-xs text-muted-foreground">Your best (this device identity)</div>
+                  <div className="text-xs text-[#7a6f62]">Your best (this device identity)</div>
                   <div className="mt-1 flex flex-wrap items-center gap-2">
                     <Badge>#{stats.me.rank}</Badge>
                     <span className="truncate font-medium">{stats.me.displayName || "(anon)"}</span>
+                    <Badge variant="outline">{stats.me.attemptsCount} attempts</Badge>
                     <Badge variant="outline">{stats.me.correct ?? 0}/{stats.me.total ?? 0}</Badge>
                     <Badge variant="secondary">{stats.me.scorePct ?? 0}%</Badge>
                     <span className="text-xs text-muted-foreground">{fmtSeconds(stats.me.durationMs)}</span>
                   </div>
                 </div>
-                <div className="text-xs text-muted-foreground">{relTime(stats.me.submittedAt)}</div>
+                <div className="text-xs text-[#7a6f62]">{relTime(stats.me.submittedAt)}</div>
               </div>
             </div>
           ) : null}
@@ -257,7 +182,13 @@ export default function LeaderboardPage() {
                   const top3 = r.rank <= 3;
 
                   return (
-                    <TableRow key={r.attemptId} className={isMe ? "bg-muted/40" : undefined}>
+                    <TableRow
+                      key={r.attemptId}
+                      className={cn(
+                        "transition-colors duration-200 hover:bg-[#f7f2e9]",
+                        isMe ? "bg-[#f3ede4]" : undefined
+                      )}
+                    >
                       <TableCell>
                         <div className="flex items-center gap-2">
                           <Badge variant={top3 ? "default" : "secondary"}>#{r.rank}</Badge>
@@ -272,10 +203,10 @@ export default function LeaderboardPage() {
                             <div className="truncate font-medium">
                               {r.displayName || "(anon)"}{isMe ? " (you)" : ""}
                             </div>
-                            <div className="text-xs text-muted-foreground">Attempt: {r.attemptId.slice(0, 8)}</div>
+                            <div className="text-xs text-[#7a6f62]">{r.attemptsCount} attempts</div>
+                           </div>
                           </div>
-                        </div>
-                      </TableCell>
+                        </TableCell>
                       <TableCell className="text-right">
                         <div className="flex items-center justify-end gap-2">
                           <Badge variant="outline">{r.correct ?? 0}/{r.total ?? 0}</Badge>
@@ -283,7 +214,7 @@ export default function LeaderboardPage() {
                         </div>
                       </TableCell>
                       <TableCell className="text-right font-mono">{fmtSeconds(r.durationMs)}</TableCell>
-                      <TableCell className="text-right text-xs text-muted-foreground" title={r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ""}>
+                      <TableCell className="text-right text-xs text-[#7a6f62]" title={r.submittedAt ? new Date(r.submittedAt).toLocaleString() : ""}>
                         {relTime(r.submittedAt)}
                       </TableCell>
                     </TableRow>
@@ -294,6 +225,7 @@ export default function LeaderboardPage() {
           </Table>
         </CardContent>
       </Card>
+      </div>
     </main>
   );
 }

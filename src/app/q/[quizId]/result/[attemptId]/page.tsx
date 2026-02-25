@@ -132,32 +132,42 @@ export default function ResultPage() {
 
   if (!result) {
     return (
-      <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center p-6">
-        <Card>
+      <main className="min-h-screen bg-[#f8f5ef] text-[#1d1b18]">
+        <div className="mx-auto flex w-full max-w-xl flex-col justify-center p-6">
+        <Card className="rounded-md border-[#dfd5c7] bg-white shadow-none">
           <CardHeader>
-            <CardTitle>Result not found</CardTitle>
-            <CardDescription>Finish the quiz first.</CardDescription>
+            <CardTitle className="font-display text-3xl">Result not found</CardTitle>
+            <CardDescription className="text-[#655b50]">Finish the quiz first.</CardDescription>
           </CardHeader>
           <CardContent className="flex gap-2">
-            <Button onClick={() => router.push(`/q/${quizId}?cohort=${encodeURIComponent(cohort)}`)}>
+            <Button
+              onClick={() => router.push(`/q/${quizId}?cohort=${encodeURIComponent(cohort)}`)}
+              className="rounded-md bg-[#1d1b18] text-white hover:bg-[#11100e]"
+            >
               Start
             </Button>
-            <Button variant="secondary" onClick={() => router.push(`/`)}>
+            <Button
+              variant="secondary"
+              onClick={() => router.push(`/`)}
+              className="rounded-md border border-[#d6ccbe] bg-white text-[#2f2a24] hover:bg-[#f3ede4]"
+            >
               Home
             </Button>
           </CardContent>
         </Card>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-xl flex-col justify-center gap-4 p-6">
-      <div ref={cardRef} className="rounded-xl border bg-background p-5">
+    <main className="min-h-screen bg-[#f8f5ef] text-[#1d1b18]">
+      <div className="mx-auto flex w-full max-w-xl flex-col justify-center gap-4 p-6">
+      <div ref={cardRef} className="rounded-md border border-[#dfd5c7] bg-white p-5 shadow-none animate-in fade-in-0 slide-in-from-bottom-2 duration-400">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <div className="text-sm text-muted-foreground">Book Club Quiz</div>
-            <div className="text-lg font-semibold leading-tight">Sophie’s World (Ch 1–3)</div>
+            <div className="text-sm text-[#6f6559]">UBC Cohort Quiz</div>
+            <div className="font-display text-2xl font-semibold leading-tight">Sophie’s World (Ch 1–3)</div>
           </div>
           <Badge variant="secondary">{cohortLabel(cohort)}</Badge>
         </div>
@@ -165,46 +175,56 @@ export default function ResultPage() {
         <Separator className="my-4" />
 
         <div className="grid grid-cols-3 gap-3">
-          <div className="rounded-lg border p-3">
-            <div className="text-xs text-muted-foreground">Score</div>
+          <div className="rounded-md border border-[#dfd5c7] bg-[#fffcf7] p-3">
+            <div className="text-xs text-[#7a6f62]">Score</div>
             <div className="text-xl font-semibold">{result.correct}/{result.total}</div>
           </div>
-          <div className="rounded-lg border p-3">
-            <div className="text-xs text-muted-foreground">Time</div>
+          <div className="rounded-md border border-[#dfd5c7] bg-[#fffcf7] p-3">
+            <div className="text-xs text-[#7a6f62]">Time</div>
             <div className="text-xl font-semibold">{msToHuman(result.durationMs ?? 0)}</div>
           </div>
-          <div className="rounded-lg border p-3">
-            <div className="text-xs text-muted-foreground">Rank</div>
+          <div className="rounded-md border border-[#dfd5c7] bg-[#fffcf7] p-3">
+            <div className="text-xs text-[#7a6f62]">Rank</div>
             <div className="text-xl font-semibold">#{result.rank?.position}</div>
-            <div className="text-xs text-muted-foreground">of {result.rank?.total}</div>
+            <div className="text-xs text-[#7a6f62]">of {result.rank?.total}</div>
           </div>
         </div>
 
-        <div className="mt-4 text-sm text-muted-foreground">
+        <div className="mt-4 text-sm text-[#6f6559]">
           {result.displayName ? `Player: ${result.displayName}` : null}
         </div>
       </div>
 
-      <Card>
+      <Card className="rounded-md border-[#dfd5c7] bg-white shadow-none animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
         <CardHeader>
-          <CardTitle>Next</CardTitle>
-          <CardDescription>Share your result or view leaderboard.</CardDescription>
+          <CardTitle className="font-display text-2xl">Next</CardTitle>
+          <CardDescription className="text-[#655b50]">Share your result or view leaderboard.</CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-2">
-          <Button onClick={onShareImage} disabled={busy}>
+          <Button
+            onClick={onShareImage}
+            disabled={busy}
+            className="rounded-md bg-[#1d1b18] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#11100e]"
+          >
             {busy ? "Preparing…" : "Share result as image"}
           </Button>
-          <Button variant="secondary" onClick={onWhatsAppLink}>
+          <Button
+            variant="secondary"
+            onClick={onWhatsAppLink}
+            className="rounded-md border border-[#d6ccbe] bg-white text-[#2f2a24] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#f3ede4]"
+          >
             Share leaderboard link on WhatsApp
           </Button>
           <Button
             variant="outline"
             onClick={() => router.push(`/q/${quizId}/leaderboard?cohort=${encodeURIComponent(cohort)}`)}
+            className="rounded-md border border-[#d6ccbe] bg-white text-[#2f2a24] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#f3ede4]"
           >
             View leaderboard
           </Button>
         </CardContent>
       </Card>
+      </div>
     </main>
   );
 }

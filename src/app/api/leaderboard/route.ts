@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const quizId = String(searchParams.get("quizId") || "").trim();
-  const cohort = String(searchParams.get("cohort") || "").trim() || "cohort-1";
+  const cohort = String(searchParams.get("cohort") || "").trim() || "cohort-3";
   const limit = Math.min(200, Math.max(1, Number(searchParams.get("limit") || 50)));
 
   if (!quizId) {
@@ -18,23 +18,51 @@ export async function GET(req: Request) {
   // Postgres DISTINCT ON picks the first row per key based on the ORDER BY.
   const rows = await db.execute(
     sql`
-      SELECT DISTINCT ON (COALESCE(participant_key, attempt_id))
-        attempt_id AS "attemptId",
-        display_name AS "displayName",
-        whatsapp AS "whatsapp",
-        correct AS "correct",
-        total AS "total",
-        score_pct AS "scorePct",
-        duration_ms AS "durationMs",
-        submitted_at AS "submittedAt"
-      FROM attempts
-      WHERE quiz_id = ${quizId} AND cohort = ${cohort} AND submitted_at IS NOT NULL
+      WITH base AS (
+        SELECT
+          attempt_id,
+          display_name,
+          whatsapp,
+          correct,
+          total,
+          score_pct,
+          duration_ms,
+          submitted_at,
+          COALESCE(participant_key, attempt_id) AS identity_key
+        FROM attempts
+        WHERE quiz_id = ${quizId} AND cohort = ${cohort} AND submitted_at IS NOT NULL
+      ),
+      counts AS (
+        SELECT identity_key, COUNT(*)::int AS attempts_count
+        FROM base
+        GROUP BY identity_key
+      )
+      SELECT DISTINCT ON (b.identity_key)
+        b.attempt_id AS "attemptId",
+        b.display_name AS "displayName",
+        b.whatsapp AS "whatsapp",
+        b.correct AS "correct",
+        b.total AS "total",
+        b.score_pct AS "scorePct",
+        b.duration_ms AS "durationMs",
+        b.submitted_at AS "submittedAt",
+        c.attempts_count AS "attemptsCount"
+      FROM base b
+      INNER JOIN counts c ON c.identity_key = b.identity_key
       ORDER BY
-        COALESCE(participant_key, attempt_id),
-        score_pct DESC,
-        duration_ms ASC,
-        submitted_at ASC
+        b.identity_key,
+        b.score_pct DESC,
+        b.duration_ms ASC,
+        b.submitted_at ASC
       LIMIT ${limit};
+    `
+  );
+
+  const attemptsCountRes = await db.execute(
+    sql`
+      SELECT COUNT(*)::int AS "attemptsCount"
+      FROM attempts
+      WHERE quiz_id = ${quizId} AND cohort = ${cohort} AND submitted_at IS NOT NULL;
     `
   );
 
@@ -47,6 +75,7 @@ export async function GET(req: Request) {
     scorePct: number | null;
     durationMs: number | null;
     submittedAt: string | null;
+    attemptsCount: number | null;
   };
 
   const sorted = (rows as unknown as { rows: LbRow[] }).rows.sort((a, b) => {
@@ -67,7 +96,12 @@ export async function GET(req: Request) {
     scorePct: r.scorePct,
     durationMs: r.durationMs,
     submittedAt: r.submittedAt ? new Date(r.submittedAt).getTime() : null,
+    attemptsCount: r.attemptsCount ?? 1,
   }));
 
-  return NextResponse.json({ quizId, cohort, leaderboard });
+  type CountRow = { attemptsCount: number | string | null };
+  const attemptsCountRaw = (attemptsCountRes as unknown as { rows: CountRow[] }).rows?.[0]?.attemptsCount;
+  const attemptsCount = Number(attemptsCountRaw ?? 0);
+
+  return NextResponse.json({ quizId, cohort, leaderboard, attemptsCount });
 }
