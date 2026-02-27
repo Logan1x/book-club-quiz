@@ -45,7 +45,7 @@ export async function GET(
 
   for (const question of q.questions) {
     const correctIndex = keyMap.get(question.id);
-    if (!Number.isInteger(correctIndex)) {
+    if (typeof correctIndex !== "number") {
       return NextResponse.json({ error: `Missing answer key for question: ${question.id}` }, { status: 500 });
     }
 
