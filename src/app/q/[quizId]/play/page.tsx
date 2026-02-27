@@ -10,7 +10,7 @@ import { cn } from "@/lib/utils";
 
 type Quiz = {
   quizId: string;
-  questions: Array<{ id: string; prompt: string; options: string[]; chapter?: number }>;
+  questions: Array<{ id: string; prompt: string; options: string[]; chapter?: number; correctIndex: number }>;
   book?: { title?: string };
 };
 
@@ -61,6 +61,7 @@ export default function PlayPage() {
   const [quizError, setQuizError] = useState<string | null>(null);
   const [idx, setIdx] = useState(0);
   const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [submittedQuestions, setSubmittedQuestions] = useState<Record<string, boolean>>({});
   const [now, setNow] = useState(Date.now());
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -130,6 +131,12 @@ export default function PlayPage() {
 
   function setAnswer(qid: string, optIndex: number) {
     setAnswers((prev) => ({ ...prev, [qid]: optIndex }));
+  }
+
+  function submitCurrentQuestion(qid: string, selectedIndex: number | undefined, correctIndex: number) {
+    if (!Number.isInteger(selectedIndex)) return;
+    if (!Number.isInteger(correctIndex)) return;
+    setSubmittedQuestions((prev) => ({ ...prev, [qid]: true }));
   }
 
   async function onSubmit(auto = false) {
@@ -247,6 +254,9 @@ export default function PlayPage() {
   const currentIdx = safeIdx;
   const q = questions[currentIdx];
   const selected = answers[q.id];
+  const isQuestionSubmitted = Boolean(submittedQuestions[q.id]);
+  const actionButtonClass =
+    "w-40 justify-center rounded-md bg-[#1d1b18] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#11100e]";
 
   return (
     <main className="min-h-screen bg-[#f8f5ef] text-[#1d1b18]">
@@ -276,20 +286,28 @@ export default function PlayPage() {
           <CardContent className="space-y-4">
             <RadioGroup
               value={Number.isInteger(selected) ? String(selected) : ""}
-              onValueChange={(v) => setAnswer(q.id, Number(v))}
+              onValueChange={(v) => {
+                if (isQuestionSubmitted) return;
+                setAnswer(q.id, Number(v));
+              }}
               className="space-y-2"
             >
               {q.options.map((opt, i) => (
                 <label
                   key={i}
                   className={cn(
-                    "flex cursor-pointer items-start gap-3 rounded-md border p-3 transition-all duration-200 hover:-translate-y-0.5",
-                    selected === i
-                      ? "border-[#c7b9a4] bg-[#f3ede4] shadow-sm"
-                      : "border-[#dfd5c7] bg-[#fffcf7] hover:bg-[#f7f2e9]"
+                    "flex items-start gap-3 rounded-md border p-3 transition-all duration-200",
+                    isQuestionSubmitted ? "cursor-default" : "cursor-pointer hover:-translate-y-0.5",
+                    isQuestionSubmitted && i === q.correctIndex
+                      ? "border-emerald-300 bg-emerald-50"
+                      : isQuestionSubmitted && selected === i
+                        ? "border-rose-300 bg-rose-50"
+                        : selected === i
+                          ? "border-[#c7b9a4] bg-[#f3ede4] shadow-sm"
+                          : "border-[#dfd5c7] bg-[#fffcf7] hover:bg-[#f7f2e9]"
                   )}
                 >
-                  <RadioGroupItem value={String(i)} className="mt-1" />
+                  <RadioGroupItem value={String(i)} className="mt-1" disabled={isQuestionSubmitted || busy} />
                   <div className="text-sm leading-relaxed">{opt}</div>
                 </label>
               ))}
@@ -305,11 +323,19 @@ export default function PlayPage() {
                 Back
               </Button>
 
-              {currentIdx < questions.length - 1 ? (
+              {!isQuestionSubmitted ? (
+                <Button
+                  onClick={() => submitCurrentQuestion(q.id, selected, q.correctIndex)}
+                  disabled={!Number.isInteger(selected) || busy}
+                  className={actionButtonClass}
+                >
+                  Submit answer
+                </Button>
+              ) : currentIdx < questions.length - 1 ? (
                 <Button
                   onClick={() => setIdx((x) => Math.min(questions.length - 1, x + 1))}
-                  disabled={!Number.isInteger(selected) || busy}
-                  className="rounded-md bg-[#1d1b18] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#11100e]"
+                  disabled={busy}
+                  className={actionButtonClass}
                 >
                   Next
                 </Button>
@@ -317,7 +343,7 @@ export default function PlayPage() {
                 <Button
                   onClick={() => onSubmit(false)}
                   disabled={busy}
-                  className="rounded-md bg-[#1d1b18] text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#11100e]"
+                  className={actionButtonClass}
                 >
                   {busy ? "Submitting..." : "Finish"}
                 </Button>

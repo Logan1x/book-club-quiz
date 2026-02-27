@@ -21,14 +21,14 @@ export async function POST() {
     .insert(quizzes)
     .values({
       quizId: quiz.quizId,
-      title: "Sophie’s World (Ch 1–3)",
+      title: "Sophie's World (15 questions)",
       durationSec: 360,
       content: quiz,
       answerKey: key,
     })
     .onConflictDoUpdate({
       target: quizzes.quizId,
-      set: { content: quiz, answerKey: key },
+      set: { title: "Sophie's World (15 questions)", content: quiz, answerKey: key },
     });
 
   await db

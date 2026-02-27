@@ -27,54 +27,74 @@
       "answerLabel": "D"
     },
     {
-      "id": "q06",
+      "id": "q16",
       "answerIndex": 1,
-      "answerLabel": "B"
+      "answerLabel": "B",
+      "answerText": "It suggests the soul is made of material 'soul atoms' that disperse in all directions when the brain disintegrates.",
+      "explanation": "Democritus believed the soul was made of round, smooth 'soul atoms' connected to the brain, and when a human died, these atoms flew apart to become part of new formations, meaning humans have no immortal soul."
     },
     {
-      "id": "q07",
-      "answerIndex": 1,
-      "answerLabel": "B"
-    },
-    {
-      "id": "q08",
+      "id": "q17",
       "answerIndex": 2,
-      "answerLabel": "C"
+      "answerLabel": "C",
+      "answerText": "A shift from seeking supernatural explanations for health and history to seeking natural ones.",
+      "explanation": "While the Greeks traditionally believed sickness was divine intervention or fate, Hippocrates and early historians began searching for natural explanations for disease and the course of history."
     },
     {
-      "id": "q09",
+      "id": "q18",
+      "answerIndex": 1,
+      "answerLabel": "B",
+      "answerText": "Because he helped 'deliver' truths that individuals already possessed within their innate reason.",
+      "explanation": "Socrates saw his task as helping people 'give birth' to correct insight, believing that real understanding cannot be imparted by someone else, but must come from within a person's innate reason."
+    },
+    {
+      "id": "q19",
       "answerIndex": 0,
-      "answerLabel": "A"
+      "answerLabel": "A",
+      "answerText": "A philosopher recognizes their own ignorance and strives for insight, while a sophist is a self-opinionated know-it-all who teaches for money.",
+      "explanation": "Unlike the Sophists who took money for their teachings and boasted of their knowledge, a real philosopher knows that he knows very little and is constantly troubled by this, driving a tireless pursuit for truth."
     },
     {
-      "id": "q10",
-      "answerIndex": 1,
-      "answerLabel": "B"
-    },
-    {
-      "id": "q11",
-      "answerIndex": 1,
-      "answerLabel": "B"
-    },
-    {
-      "id": "q12",
+      "id": "q20",
       "answerIndex": 2,
-      "answerLabel": "C"
+      "answerLabel": "C",
+      "answerText": "That all sensory objects are temporary, imperfect copies of eternal, immutable forms or 'ideas.'",
+      "explanation": "Plato believed that everything tangible 'flows' and disintegrates, but all things are fashioned after timeless, eternal, and immutable 'molds' or 'ideas' in the world of ideas, just as lopsided gingerbread men are made from a perfect mold."
     },
     {
-      "id": "q13",
-      "answerIndex": 3,
-      "answerLabel": "D"
-    },
-    {
-      "id": "q14",
-      "answerIndex": 3,
-      "answerLabel": "D"
-    },
-    {
-      "id": "q15",
+      "id": "q21",
       "answerIndex": 0,
-      "answerLabel": "A"
+      "answerLabel": "A",
+      "answerText": "The human tendency to mistake fleeting sensory illusions (shadows) for ultimate reality, and the danger faced by those who try to reveal the truth.",
+      "explanation": "The myth illustrates people living among shadows they mistake for reality, and the philosopher's perilous journey to discover the true ideas casting the shadows; often facing death from the 'cave dwellers' when trying to enlighten them, much like Socrates."
+    },
+    {
+      "id": "q22",
+      "answerIndex": 3,
+      "answerLabel": "D",
+      "answerText": "Aristotle argued that 'forms' are the specific characteristics inherent within physical things, not separate entities in a higher realm.",
+      "explanation": "Aristotle disagreed that the 'idea' chicken came before the physical chicken; he believed 'forms' did not exist independently on their own shelf, but were present in the things themselves as their specific characteristics."
+    },
+    {
+      "id": "q23",
+      "answerIndex": 2,
+      "answerLabel": "C",
+      "answerText": "He believed that natural phenomena have an inherent purpose, such as raining so that plants and animals can grow.",
+      "explanation": "Unlike modern science, Aristotle believed there is a purpose behind everything in nature, assigning raindrops a 'life-task' or 'final cause,' which is to provide moisture so plants and animals can live."
+    },
+    {
+      "id": "q24",
+      "answerIndex": 3,
+      "answerLabel": "D",
+      "answerText": "He asked the emperor to step aside because he was blocking the sun, proving that true happiness doesn't depend on material or political power.",
+      "explanation": "Diogenes, who lived in a barrel and owned almost nothing, showed he had everything he desired and was no less happy than the emperor simply by asking Alexander to stop blocking his sunlight."
+    },
+    {
+      "id": "q25",
+      "answerIndex": 0,
+      "answerLabel": "A",
+      "answerText": "Indo-Europeans have a cyclic view of history, while Semites have a linear view of history.",
+      "explanation": "Indo-Europeans believed history goes in circles with no beginning or end, while Semites shared a linear view where history is an ongoing line beginning with God's creation and ending with Judgment Day."
     }
   ]
 }

@@ -1,7 +1,7 @@
 {
   "quizId": "sophies-world-ch1-3-adult-cohort-v1",
   "book": {
-    "title": "Sophie’s World",
+    "title": "Sophie's World",
     "chaptersCovered": [
       {
         "number": 1,
@@ -14,6 +14,30 @@
       {
         "number": 3,
         "title": "The Myths"
+      },
+      {
+        "number": 4,
+        "title": "Democritus"
+      },
+      {
+        "number": 5,
+        "title": "Fate"
+      },
+      {
+        "number": 6,
+        "title": "Socrates"
+      },
+      {
+        "number": 7,
+        "title": "Plato"
+      },
+      {
+        "number": 8,
+        "title": "Aristotle"
+      },
+      {
+        "number": 9,
+        "title": "Hellenism"
       }
     ]
   },
@@ -29,7 +53,7 @@
       "chapter": 1,
       "prompt": "In Chapter 1, the discussion about robots primarily functions as what kind of opening move by the author?",
       "options": [
-        "A metaphor for Sophie’s dislike of Joanna",
+        "A metaphor for Sophie's dislike of Joanna",
         "A prediction that the plot will become science-fiction driven",
         "A warning that technology will replace education",
         "A wedge that turns ordinary talk into a question about what a human being is"
@@ -38,18 +62,18 @@
     {
       "id": "q02",
       "chapter": 1,
-      "prompt": "Sophie’s house ‘at the end of the world’ (edge of suburb, woods beyond) most strongly signals:",
+      "prompt": "Sophie's house 'at the end of the world' (edge of suburb, woods beyond) most strongly signals:",
       "options": [
-        "A psychological boundary—she is positioned at the edge of the familiar, facing the unknown",
-        "A literal survival theme—nature will be the central conflict",
-        "A future setting shift—the story will move into the forest permanently",
-        "A socioeconomic clue—she is poorer than her classmates"
+        "A psychological boundary; she is positioned at the edge of the familiar, facing the unknown",
+        "A literal survival theme; nature will be the central conflict",
+        "A future setting shift; the story will move into the forest permanently",
+        "A socioeconomic clue; she is poorer than her classmates"
       ]
     },
     {
       "id": "q03",
       "chapter": 1,
-      "prompt": "Joanna’s ‘brain as an advanced computer’ claim is best read as representing which philosophical stance?",
+      "prompt": "Joanna's 'brain as an advanced computer' claim is best read as representing which philosophical stance?",
       "options": [
         "Materialism / reductionism (mind explained fully by physical processes)",
         "Idealism (reality is fundamentally mental)",
@@ -60,18 +84,18 @@
     {
       "id": "q04",
       "chapter": 1,
-      "prompt": "Sophie’s hesitation about the computer analogy implies a commitment (even if unformed) to:",
+      "prompt": "Sophie's hesitation about the computer analogy implies a commitment (even if unformed) to:",
       "options": [
         "The belief that humans have no physical basis at all",
         "The view that robots are morally evil",
-        "The idea that lived experience (subjectivity) isn’t captured by ‘hardware’ descriptions",
+        "The idea that lived experience (subjectivity) isn't captured by 'hardware' descriptions",
         "The belief that school should teach only practical skills"
       ]
     },
     {
       "id": "q05",
       "chapter": 1,
-      "prompt": "The chapter title ‘The Garden of Eden’ is most likely doing what, at this early stage?",
+      "prompt": "The chapter title 'The Garden of Eden' is most likely doing what, at this early stage?",
       "options": [
         "Indicating a romantic subplot is about to start",
         "Hinting Sophie will study theology instead of philosophy",
@@ -80,113 +104,113 @@
       ]
     },
     {
-      "id": "q06",
-      "chapter": 2,
-      "prompt": "In Chapter 2, Sophie’s frustration with school (‘trivialities’) is best understood as:",
+      "id": "q16",
+      "chapter": 4,
+      "prompt": "How does Democritus's atom theory challenge the concept of an eternal, immortal soul?",
       "options": [
-        "A plot device to make her skip school later",
-        "A clash between institutional learning and existential inquiry",
-        "A sign she dislikes learning languages specifically",
-        "A complaint that teachers are personally unfair to her"
+        "It proves that the soul reincarnates into new physical forms after death.",
+        "It suggests the soul is made of material 'soul atoms' that disperse in all directions when the brain disintegrates.",
+        "It argues that only the gods, not humans, possess immortal souls.",
+        "It claims that the soul is an illusion created by the fear of death."
       ]
     },
     {
-      "id": "q07",
-      "chapter": 2,
-      "prompt": "The quote about philosophy requiring the ‘faculty of wonder’ positions wonder as:",
+      "id": "q17",
+      "chapter": 5,
+      "prompt": "What significant shift in human thinking is represented by the transition from consulting the Oracle at Delphi to the medical practices of Hippocrates?",
       "options": [
-        "A talent for winning debates",
-        "The engine that turns the obvious into a problem worth thinking about",
-        "A childish phase to outgrow",
-        "A synonym for having many opinions"
+        "A shift from democratic decision-making to relying on expert priests.",
+        "A shift from polytheism to strict monotheism.",
+        "A shift from seeking supernatural explanations for health and history to seeking natural ones.",
+        "A shift from treating physical ailments to prioritizing psychological therapy."
       ]
     },
     {
-      "id": "q08",
-      "chapter": 2,
-      "prompt": "Sophie’s choice to keep the letters secret (for now) most strongly suggests:",
+      "id": "q18",
+      "chapter": 6,
+      "prompt": "Why does Socrates compare his philosophical method to the work of a midwife?",
       "options": [
-        "She suspects her father is sending them",
-        "She is afraid Joanna will steal her homework",
-        "She senses the questions are intimate—something to ‘own’ before socializing",
-        "She is planning to run away"
+        "Because he believed that new knowledge must be painfully extracted from nature.",
+        "Because he helped 'deliver' truths that individuals already possessed within their innate reason.",
+        "Because he believed that philosophy was a nurturing, feminine pursuit.",
+        "Because he guided young people through the painful transition into adulthood."
       ]
     },
     {
-      "id": "q09",
-      "chapter": 2,
-      "prompt": "The contrast ‘thinking about big questions’ vs ‘memorizing irregular verbs’ is mainly used to highlight:",
+      "id": "q19",
+      "chapter": 6,
+      "prompt": "According to the text, what distinguishes a true philosopher from a 'sophist' in the context of ancient Athens?",
       "options": [
-        "A hierarchy of meaning—skills matter, but they’re not the same as understanding existence",
-        "That languages are useless",
-        "That Sophie is academically weak",
-        "That her teachers are incompetent"
+        "A philosopher recognizes their own ignorance and strives for insight, while a sophist is a self-opinionated know-it-all who teaches for money.",
+        "A philosopher relies on written texts, while a sophist relies purely on oral debate.",
+        "A philosopher believes in the Greek gods, while a sophist is strictly an atheist.",
+        "A philosopher charges money for teaching, while a sophist teaches for free."
       ]
     },
     {
-      "id": "q10",
-      "chapter": 2,
-      "prompt": "The title ‘The Top Hat’ most plausibly signals the chapter’s theme of:",
+      "id": "q20",
+      "chapter": 7,
+      "prompt": "In Plato's philosophy, what does the 'gingerbread mold' metaphor illustrate about the physical world?",
       "options": [
-        "A political symbol",
-        "Everyday reality as a kind of stage trick—how the familiar can hide the mysterious",
-        "A literal character who wears a top hat",
-        "A coming fashion trend at Sophie’s school"
+        "That the universe was created mechanically without any divine purpose.",
+        "That human beings impose their own subjective patterns onto meaningless matter.",
+        "That all sensory objects are temporary, imperfect copies of eternal, immutable forms or 'ideas.'",
+        "That physical objects are perfect reflections of the creator's mind."
       ]
     },
     {
-      "id": "q11",
-      "chapter": 3,
-      "prompt": "Chapter 3 places a letter from Sophie’s father alongside the mysterious brown envelope. What effect does this pairing create?",
+      "id": "q21",
+      "chapter": 7,
+      "prompt": "What psychological or societal reality does Plato's 'Myth of the Cave' attempt to expose?",
       "options": [
-        "It resolves the mystery by confirming the father sent the envelopes",
-        "It heightens suspense by juxtaposing ordinary affection with uncanny inquiry",
-        "It shows Sophie no longer cares about her father",
-        "It shifts the story away from philosophy into travel writing"
+        "The human tendency to mistake fleeting sensory illusions (shadows) for ultimate reality, and the danger faced by those who try to reveal the truth.",
+        "The necessity of religious rituals to overcome the darkness of human nature.",
+        "The evolutionary origins of humanity as cave-dwelling creatures.",
+        "The danger of isolating oneself from the political life of the city-state."
       ]
     },
     {
-      "id": "q12",
-      "chapter": 3,
-      "prompt": "The chapter’s opening boredom (‘interminable day’) serves which deeper purpose?",
+      "id": "q22",
+      "chapter": 8,
+      "prompt": "How does Aristotle's view of 'ideas' or 'forms' directly contradict his teacher Plato's view?",
       "options": [
-        "It foreshadows that school will be cancelled",
-        "It proves Sophie is lazy",
-        "It makes the arrival of philosophical mystery feel like relief and necessity, not entertainment",
-        "It indicates the author dislikes teachers"
+        "Aristotle claimed that forms are constantly changing, while Plato claimed they are eternal.",
+        "Aristotle believed forms exist only in the human imagination, while Plato believed they exist in nature.",
+        "Aristotle believed only living creatures have forms, while Plato applied forms to inanimate objects.",
+        "Aristotle argued that 'forms' are the specific characteristics inherent within physical things, not separate entities in a higher realm."
       ]
     },
     {
-      "id": "q13",
-      "chapter": 3,
-      "prompt": "The title ‘The Myths’ most naturally connects to Sophie’s situation by suggesting myths are:",
+      "id": "q23",
+      "chapter": 8,
+      "prompt": "When explaining why it rains, Aristotle includes the 'final cause.' What does this reveal about his worldview?",
       "options": [
-        "Unrelated to real life—just stories",
-        "Pure lies told to control children",
-        "Only religious propaganda",
-        "Early frameworks humans used to explain what later becomes philosophy"
+        "He viewed nature as purely mechanical and devoid of any underlying meaning.",
+        "He thought that human beings have the power to alter the weather through ethical behavior.",
+        "He believed that natural phenomena have an inherent purpose, such as raining so that plants and animals can grow.",
+        "He believed that all natural processes are driven by a conscious, divine puppeteer."
       ]
     },
     {
-      "id": "q14",
-      "chapter": 3,
-      "prompt": "The quote about a balance between good and evil most strongly prepares the reader for:",
+      "id": "q24",
+      "chapter": 9,
+      "prompt": "How did Diogenes the Cynic demonstrate his philosophical belief when visited by Alexander the Great?",
       "options": [
-        "A coming war scene",
-        "A detective plot with criminals",
-        "A sports rivalry",
-        "Mythic thinking as a way to map moral and cosmic order onto the world"
+        "He begged for food and shelter to show that humanity relies on mutual compassion.",
+        "He demanded a position of power to enact social reform.",
+        "He engaged Alexander in a dialectical debate to prove the futility of war.",
+        "He asked the emperor to step aside because he was blocking the sun, proving that true happiness doesn't depend on material or political power."
       ]
     },
     {
-      "id": "q15",
-      "chapter": 1,
-      "prompt": "Across Chapters 1–3, what is the most consistent ‘trigger’ that moves Sophie from routine life into philosophical attention?",
+      "id": "q25",
+      "chapter": 9,
+      "prompt": "According to the text, what is a key difference between the traditional Indo-European and Semitic views of history?",
       "options": [
-        "Moments where the everyday cracks open—ordinary scenes become questions (mind, world, meaning)",
-        "A desire to outperform Joanna academically",
-        "A plan to become a scientist",
-        "A dislike of her neighborhood"
+        "Indo-Europeans have a cyclic view of history, while Semites have a linear view of history.",
+        "Indo-Europeans believe history is controlled by one God, while Semites believe it is guided by many gods.",
+        "Indo-Europeans record history primarily through writing, while Semites rely solely on oral traditions.",
+        "Indo-Europeans view history as an illusion, while Semites view it as a strict scientific progression."
       ]
     }
   ]
