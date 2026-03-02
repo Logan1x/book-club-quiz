@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
@@ -101,6 +102,12 @@ export default function ResultPage() {
       if (nav.share) {
         try {
           await nav.share({ files: [file], title: "Quiz result" });
+          track("result_shared_image", {
+            quizId,
+            cohort,
+            attemptId,
+            method: "native-share",
+          });
           return;
         } catch (err: unknown) {
           // If user cancels share sheet, don't force a download.
@@ -116,8 +123,20 @@ export default function ResultPage() {
       a.href = dataUrl;
       a.download = "quiz-result.png";
       a.click();
+      track("result_shared_image", {
+        quizId,
+        cohort,
+        attemptId,
+        method: "download",
+      });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Share failed";
+      track("result_share_failed", {
+        quizId,
+        cohort,
+        attemptId,
+        error: msg,
+      });
       alert(msg);
     } finally {
       setBusy(false);
@@ -127,6 +146,12 @@ export default function ResultPage() {
   function onWhatsAppLink() {
     const url = `${window.location.origin}/q/${quizId}/leaderboard?cohort=${encodeURIComponent(cohort)}`;
     const text = `I just finished the quiz! Leaderboard: ${url}`;
+    track("leaderboard_link_shared", {
+      quizId,
+      cohort,
+      attemptId,
+      channel: "whatsapp",
+    });
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
   }
 

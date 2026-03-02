@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -114,9 +115,20 @@ export default function JoinPage() {
         `bcq.attempt.${data.attemptId}`,
         JSON.stringify({ ...data, displayName: cleanName, whatsapp: whatsapp.trim() || null })
       );
+      track("quiz_started", {
+        quizId,
+        cohort,
+        attemptId: data.attemptId,
+        usedSavedIdentity: usingSavedIdentity,
+      });
       router.push(`/q/${quizId}/play?cohort=${encodeURIComponent(cohort)}&attemptId=${encodeURIComponent(data.attemptId)}`);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Failed to start";
+      track("quiz_start_failed", {
+        quizId,
+        cohort,
+        error: msg,
+      });
       setError(msg);
     } finally {
       setBusy(false);

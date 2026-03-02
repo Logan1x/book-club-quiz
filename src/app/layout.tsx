@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Newsreader } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { Suspense } from "react";
 import { Navbar } from "@/components/navbar";
 import "./globals.css";
@@ -38,6 +39,7 @@ export default function RootLayout({
           <Navbar />
         </Suspense>
         {children}
+        <Analytics />
       </body>
     </html>
   );

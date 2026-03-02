@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { track } from "@vercel/analytics";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -136,6 +137,17 @@ export default function PlayPage() {
   function submitCurrentQuestion(qid: string, selectedIndex: number | undefined, correctIndex: number) {
     if (!Number.isInteger(selectedIndex)) return;
     if (!Number.isInteger(correctIndex)) return;
+
+    track("question_submitted", {
+      quizId,
+      cohort,
+      attemptId,
+      questionId: qid,
+      selectedIndex,
+      correctIndex,
+      isCorrect: selectedIndex === correctIndex,
+    });
+
     setSubmittedQuestions((prev) => ({ ...prev, [qid]: true }));
   }
 
@@ -164,10 +176,25 @@ export default function PlayPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data?.error || "Submit failed");
 
+      track("quiz_submitted", {
+        quizId,
+        cohort,
+        attemptId,
+        auto,
+        answeredCount: Object.keys(answers).length,
+      });
+
       lsSet(`bcq.result.${attemptId}`, JSON.stringify(data));
       router.push(`/q/${quizId}/result/${attemptId}?cohort=${encodeURIComponent(cohort)}`);
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Submit failed";
+      track("quiz_submit_failed", {
+        quizId,
+        cohort,
+        attemptId,
+        auto,
+        error: msg,
+      });
       setSubmitError(msg);
       setBusy(false);
     }
